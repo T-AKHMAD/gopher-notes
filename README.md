@@ -1,7 +1,6 @@
 # Gopher Notes
 
-Мини-сервис заметок на Go: регистрация, логин по паролю, токены-сессии, CRUD заметок.
-Хранение данных — PostgreSQL.
+Разработал REST API сервис заметок на Go: signup/login, bearer-token sessions, защищённые эндпоинты, PostgreSQL, миграции и Docker Compose. Реализовал middleware для логирования и авторизации, graceful shutdown.
 
 ## Requirements
 - Go
