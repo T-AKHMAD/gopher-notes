@@ -1,0 +1,30 @@
+# env
+.env
+.env.*
+!.env.example
+
+# binaries
+/bin/
+/dist/
+/build/
+*.exe
+*.out
+
+# Go build cache / test
+*.test
+*.prof
+cover.out
+
+# Go workspace (if used)
+go.work
+go.work.sum
+
+# IDE
+.vscode/
+.idea/
+
+# macOS
+.DS_Store
+
+# logs
+*.log
