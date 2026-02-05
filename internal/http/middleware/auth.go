@@ -20,23 +20,6 @@ func UserIDFromContext(ctx context.Context) (int64, bool) {
 	return id, ok
 }
 
-func bearerToken(r *http.Request) (string, bool) {
-	h := r.Header.Get("Authorization")
-	if h == "" {
-		return "", false
-	}
-	const prefix = "Bearer "
-	if !strings.HasPrefix(h, prefix) {
-		return "", false
-	}
-
-	token := strings.TrimSpace(strings.TrimPrefix(h, prefix))
-	if token == "" {
-		return "", false
-	}
-	return token, true
-}
-
 func Auth(sessionsRepo *sessions.Repo) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -54,7 +37,7 @@ func Auth(sessionsRepo *sessions.Repo) func(http.Handler) http.Handler {
 				http.Error(w, "internal error", http.StatusInternalServerError)
 				return
 			}
-
+			
 			if time.Now().After(sess.ExpiresAt) {
 				http.Error(w, "token expired", http.StatusUnauthorized)
 				return
@@ -65,44 +48,23 @@ func Auth(sessionsRepo *sessions.Repo) func(http.Handler) http.Handler {
 	}
 }
 
-// func Auth(sessionsRepo *sessions.Repo) func(http.Handler) http.Handler {
-// 	return func(next http.Handler) http.Handler {
-// 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-// 			h := r.Header.Get("Authorization")
-// 			if h == "" {
-// 				http.Error(w, "missing authorization", http.StatusUnauthorized)
-// 				return
-// 			}
+func bearerToken(r *http.Request) (string, bool) {
+	h := r.Header.Get("Authorization")
+	if h == "" {
+		return "", false
+	}
+	const prefix = "Bearer "
+	if !strings.HasPrefix(h, prefix) {
+		return "", false
+	}
 
-// 			const prefix = "Bearer "
-// 			if !strings.HasPrefix(h, prefix) {
-// 				http.Error(w, "invalid authorization", http.StatusUnauthorized)
-// 				return
-// 			}
+	token := strings.TrimSpace(strings.TrimPrefix(h, prefix))
+	if token == "" {
+		return "", false
+	}
+	return token, true
+}
 
-// 			token := strings.TrimSpace(strings.TrimPrefix(h, prefix))
-// 			if token == "" {
-// 				http.Error(w, "invalid authorization", http.StatusUnauthorized)
-// 				return
-// 			}
-
-// 			sess, err := sessionsRepo.GetByToken(r.Context(), token)
-// 			if err != nil {
-// 				if errors.Is(err, sql.ErrNoRows) {
-// 					http.Error(w, "invalid token", http.StatusUnauthorized)
-// 					return
-// 				}
-// 				http.Error(w, "internal error", http.StatusInternalServerError)
-// 				return
-// 			}
-
-// 			if time.Now().After(sess.ExpiresAt) {
-// 				http.Error(w, "token expired", http.StatusUnauthorized)
-// 				return
-// 			}
-
-// 			ctx := context.WithValue(r.Context(), userIDKey, sess.UserID)
-// 			next.ServeHTTP(w, r.WithContext(ctx))
-// 		})
-// 	}
-// }
+func BearerToken(r *http.Request) (string, bool) {
+	return bearerToken(r)
+}

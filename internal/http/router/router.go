@@ -13,6 +13,7 @@ func New(usersRepo *users.Repo, sessionsRepo *sessions.Repo, notesRepo *notes.Re
 	me := middleware.Auth(sessionsRepo)(handlers.Me(usersRepo))
 	notesHandler := middleware.Auth(sessionsRepo)(handlers.Notes(notesRepo))
 	noteByid := middleware.Auth(sessionsRepo)(handlers.NoteByID(notesRepo))
+
 	mux := http.NewServeMux()
 	mux.Handle("/notes/", noteByid)
 	mux.Handle("/notes", notesHandler)
@@ -20,5 +21,6 @@ func New(usersRepo *users.Repo, sessionsRepo *sessions.Repo, notesRepo *notes.Re
 	mux.HandleFunc("/health", handlers.Health)
 	mux.HandleFunc("/signup", handlers.Signup(usersRepo))
 	mux.HandleFunc("/login", handlers.Login(usersRepo, sessionsRepo))
+	mux.HandleFunc("/logout", handlers.Logout(sessionsRepo))
 	return middleware.RequestLogger(mux)
 }
