@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"gopher-notes/internal/http/response"
 	"gopher-notes/internal/repository/sessions"
 	"net/http"
 	"strings"
@@ -25,21 +26,21 @@ func Auth(sessionsRepo *sessions.Repo) func(http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			token, ok := bearerToken(r)
 			if !ok {
-				http.Error(w, "missing or invalid authorization", http.StatusUnauthorized)
+				response.WriteError(w, http.StatusUnauthorized, "missing or invalid authorization")
 				return
 			}
 			sess, err := sessionsRepo.GetByToken(r.Context(), token)
 			if err != nil {
 				if errors.Is(err, sql.ErrNoRows) {
-					http.Error(w, "invalid token", http.StatusUnauthorized)
+					response.WriteError(w, http.StatusUnauthorized, "invalid token")
 					return
 				}
-				http.Error(w, "internal error", http.StatusInternalServerError)
+				response.WriteError(w, http.StatusInternalServerError, "internal error")
 				return
 			}
 			
 			if time.Now().After(sess.ExpiresAt) {
-				http.Error(w, "token expired", http.StatusUnauthorized)
+				response.WriteError(w, http.StatusUnauthorized, "token expired")
 				return
 			}
 			ctx := context.WithValue(r.Context(), userIDKey, sess.UserID)
