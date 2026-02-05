@@ -10,21 +10,21 @@ func Logout(sessionsRepo *sessions.Repo) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
 			writeError(w, http.StatusMethodNotAllowed, "method not allowed")
-			return 
+			return
 		}
 		token, ok := middleware.BearerToken(r)
 		if !ok {
 			writeError(w, http.StatusUnauthorized, "missing or invalid authorization")
-			return 
+			return
 		}
 		deleted, err := sessionsRepo.Delete(r.Context(), token)
 		if err != nil {
 			writeError(w, http.StatusInternalServerError, "internal error")
-			return 
+			return
 		}
 		if !deleted {
 			writeError(w, http.StatusUnauthorized, "invalid token")
-			return 
+			return
 		}
 		w.WriteHeader(http.StatusNoContent)
 	}

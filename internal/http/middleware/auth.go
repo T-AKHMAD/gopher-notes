@@ -38,7 +38,7 @@ func Auth(sessionsRepo *sessions.Repo) func(http.Handler) http.Handler {
 				response.WriteError(w, http.StatusInternalServerError, "internal error")
 				return
 			}
-			
+
 			if time.Now().After(sess.ExpiresAt) {
 				response.WriteError(w, http.StatusUnauthorized, "token expired")
 				return
