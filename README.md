@@ -1,3 +1,5 @@
+![CI](https://github.com/T-AKHMAD/gopher-notes/actions/workflows/ci.yml/badge.svg)
+
 # Gopher Notes
 
 Разработал REST API сервис заметок на Go: signup/login, bearer-token sessions, защищённые эндпоинты, PostgreSQL, миграции и Docker Compose. Реализовал middleware для логирования и авторизации, graceful shutdown.
